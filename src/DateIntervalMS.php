@@ -32,7 +32,7 @@ class DateIntervalMS extends DateInterval
         (?:T ## T delineates between day and time information
             (?:(?P<h>\d+)H)? ## hour
             (?:(?P<i>\d+)M)? ## minute
-            (?:(?P<s>\d+(?:\.\d{1,6})?)S)? ## seconds as float.
+            (?:(?P<s>\d+(?:\.\d+)?)S)? ## seconds as float.
             )? ## closes 'T' subexpression
         $ ## end of the string
         /x";
@@ -111,7 +111,7 @@ class DateIntervalMS extends DateInterval
     {
         // Check input for validity and extract the date/time parts.
         if (! \preg_match(static::$intervalSpecRegex, $intervalSpec, $parts)) {
-            throw new Exception(sprintf("%s::%s: Unknown or bad format (%s)", get_called_class(), '__construct', $intervalSpec));
+            throw new UnexpectedValueException(sprintf("%s::%s: Unknown or bad format (%s)", get_called_class(), '__construct', $intervalSpec));
         }
         
         // Get microseconds from spec.
