@@ -275,16 +275,19 @@ class DateTimeMS extends DateTime
         return $timestamp;
     }
     
+    /**
+     * @todo Recognize fractions cq microseconds in absolute time formats.
+     */
     public function modify($modify)
     {
         // Extract relative microseconds operations
         $operationsMs = static::extractRelativeMicrosecondsOperations($modify);
         
         // Let parent handle Date, Time and Compound formats. Relative micro-
-        //  seconds operations will be ignored.
+        //  seconds operations are not supported by parent.
         parent::modify($modify);
         
-        // TODO Set the microseconds to 0 if a resetting keyword was found.
+        // Set the microseconds to 0 if a resetting keyword was found.
         $keywordsRegex = "/(?:^|[ \t]+)(?:" . implode('|', static::$timeResettingKeywords) . ")(?:$|[ \t])/";
         if (preg_match($keywordsRegex, $modify)) {
             $this->microInSeconds = 0.0;
