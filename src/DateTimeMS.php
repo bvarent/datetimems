@@ -277,6 +277,7 @@ class DateTimeMS extends DateTime
     
     /**
      * @todo Recognize fractions cq microseconds in absolute time formats.
+     * E.g. 10:01:03.7869 should set the microseconds to 786900
      */
     public function modify($modify)
     {

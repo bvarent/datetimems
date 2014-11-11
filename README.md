@@ -25,7 +25,7 @@ print "In between {$dtToday->format('D, H:i:s.u')} and the same second tomorrow
 Warnings
 --------
 *  The comparison operators (< > = etc) do not account for microseconds. (Which
-   is impossible to realize due to nonexistence of PHP operator overloading.)
+   is impossible to achieve due to nonexistence of PHP operator overloading.)
 *  DateTimeMS::modify cannot be used to set microseconds explicitly.
 *  DateIntervalMS::modify is not implemented.
 
@@ -35,4 +35,3 @@ ToDo
 *  Implement DateIntervalMS::modify
 *  Expand the unit tests.
 *  Test and think about performance.
-*  
