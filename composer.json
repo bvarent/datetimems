@@ -2,6 +2,7 @@
     "name" : "bvarent/datetimems",
     "description" : "DateTime with microseconds awareness and calculations.",
     "type" : "library",
+    "license" : "LGPL-3.0+",
     "authors" : [{
         "name" : "bvarent",
         "email" : "r.arents@bva-auctions.com"
