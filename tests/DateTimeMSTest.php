@@ -58,6 +58,7 @@ class DateTimeMSTest extends PHPUnit_Framework_TestCase
      * @dataProvider provideDiffDates
      * @param string $strA Date string A.
      * @param string $strB Date string B.
+     * @param DateIntervalMS $answer The interval that should be the result of the operation.
      */
     public function testDiff($strA, $strB, DateIntervalMS $answer)
     {
@@ -97,5 +98,40 @@ class DateTimeMSTest extends PHPUnit_Framework_TestCase
         $dt->modify($modify);
         $this->assertEquals($answer,
                 $dt->format(static::$defaultFormat));
+    }
+    
+    /**
+     * Test if add method works correctly.
+     * @covers DateTimeMS::add
+     * @dataProvider provideDiffDates
+     * @param string $strSubject string The date(string) to modify.
+     * @param string $strAnswer The date(string) that should be the result.
+     * @param DateInterval $interval The interval to apply.
+     */
+    public function testAdd($strSubject, $strAnswer, DateInterval $interval)
+    {
+        $dtSubject = new DateTimeMS($strSubject);
+        $dtAnswer = new DateTimeMS($strAnswer);
+        $dtSubject->add($interval);
+        $this->assertEquals($dtAnswer->format(static::$defaultFormat), 
+                $dtSubject->format(static::$defaultFormat));
+    }
+    
+    /**
+     * Test if sub(tract) method works correctly.
+     * @depends testAdd
+     * @covers DateTimeMS::sub
+     * @dataProvider provideDiffDates
+     * @param string $strSubject string The date(string) to modify.
+     * @param string $strAnswer The date(string) that should be the result.
+     * @param DateInterval $interval The interval to apply.
+     */
+    public function testSub($strAnswer, $strSubject, DateInterval $interval)
+    {
+        $dtSubject = new DateTimeMS($strSubject);
+        $dtAnswer = new DateTimeMS($strAnswer);
+        $dtSubject->sub($interval);
+        $this->assertEquals($dtAnswer->format(static::$defaultFormat), 
+                $dtSubject->format(static::$defaultFormat));
     }
 }
