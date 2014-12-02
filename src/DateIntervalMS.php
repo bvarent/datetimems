@@ -12,13 +12,13 @@ class DateIntervalMS extends DateInterval
      * @var int
      */
     const MS_IN_S = 1000000;
-    
+
     /**
      * Number of microseconds
      * @var int 
      */
     public $u = 0;
-    
+
     /**
      * A regular expression for parsing an interval specification.
      * @var string
@@ -36,7 +36,7 @@ class DateIntervalMS extends DateInterval
             )? ## closes 'T' subexpression
         $ ## end of the string
         /x";
-    
+
     /**
      * @todo Implement support for microseconds.
      */
@@ -44,7 +44,7 @@ class DateIntervalMS extends DateInterval
     {
         return parent::createFromDateString($input);
     }
-    
+
     /**
      * @param string $format Like {@see format} but 'u' and 'U' are also supported.
      *  U   Microseconds, zero-padded until six digits.
@@ -57,11 +57,11 @@ class DateIntervalMS extends DateInterval
         // Substitute microseconds.
         $format = str_replace('%U', sprintf("%06d", $this->u), $format);
         $format = str_replace('%u', sprintf("%d", intval($this->u)), $format);
-        
+
         // Let parent do the rest.
         return parent::format($format);
     }
-    
+
     /**
      * Converts cq casts a DateInterval to self
      * @param DateInterval $interval
@@ -70,15 +70,15 @@ class DateIntervalMS extends DateInterval
     public static function castIntervalToMS(DateInterval $interval)
     {
         $intervalMs = new DateIntervalMS("PT0S");
-        
+
         // Copy all properties.
         foreach ($foo = get_object_vars($interval) as $prop => $val) {
             $intervalMs->$prop = $val;
         }
-        
+
         return $intervalMs;
     }
-    
+
     /**
      * Converts microseconds to seconds.
      * @param int $microseconds
@@ -90,7 +90,7 @@ class DateIntervalMS extends DateInterval
         $seconds = round($microseconds / static::MS_IN_S, 6);
         return $seconds;
     }
-    
+
     /**
      * Converts seconds to microseconds.
      * @param float $seconds
@@ -102,7 +102,7 @@ class DateIntervalMS extends DateInterval
         $microseconds = intval($seconds * static::MS_IN_S);
         return $microseconds;
     }
-    
+
     /**
      * @param string $intervalSpec Like {@see __construct) but seconds can have
      *  a decimal separator to indicate microseconds. E.g.: PT8.01234S
@@ -113,7 +113,7 @@ class DateIntervalMS extends DateInterval
         if (! \preg_match(static::$intervalSpecRegex, $intervalSpec, $parts)) {
             throw new UnexpectedValueException(sprintf("%s::%s: Unknown or bad format (%s)", get_called_class(), '__construct', $intervalSpec));
         }
-        
+
         // Get microseconds from spec.
         if (isset($parts['s'])) {
             $preciseSeconds = floatval($parts['s']);
@@ -122,14 +122,14 @@ class DateIntervalMS extends DateInterval
             $this->u = $microseconds;
             $parts['s'] = $seconds;
         }
-        
+
         // Rebuild the interval spec without microseconds.
         $legacySpec = static::getLegacySpec($parts);
-        
+
         // Let parent do the rest of the parsing.
         parent::__construct($legacySpec);
     }
-    
+
     /**
      * Creates an interval specification in legacy format (without microseconds)
      *  from a parsed interval spec.
@@ -150,14 +150,14 @@ class DateIntervalMS extends DateInterval
         if ($spec === "P") {
             $spec = "";
         }
-        
+
         return $spec;
     }
-    
+
     public static function __set_state(array $state)
     {
         $intv = new static();
-        
+
         foreach ($state as $key => $val)
         {
             if (property_exists($intv, $key)) {
@@ -165,4 +165,37 @@ class DateIntervalMS extends DateInterval
             }
         }
     }
+
+    /**
+     * (Re)creates the interval_spec string from an interval.
+     * @param DateInterval $interval
+     * @return string
+     */
+    public static function getIntervalSpec(DateInterval $interval)
+    {
+        $intervalSpecFormat = "P%yY%mM%dDT%hH%iM%sS";
+        if ($interval instanceof static) {
+            $intervalSpecFormat = "P%yY%mM%dDT%hH%iM%s.%US";
+        }
+        $intervalSpec = $interval->format($intervalSpecFormat);
+        
+        return $intervalSpec;
+    }
+
+    /**
+     * Duplicates (aka clones) a DateInterval. Since cloning a DateInterval 
+     * {@link https://bugs.php.net/bug.php?id=50559 is not implemented} in PHP.
+     * @param DateInterval $original The original interval. May also be a {@see self}; in
+     *  which case the microseconds are also cloned.
+     * @return DateInterval The clone.
+     */
+    public static function duplicate(DateInterval $original)
+    {
+        $intervalSpec = static::getIntervalSpec($original);
+        $intervalClass = get_class($original);
+        $duplicate = new $intervalClass($intervalSpec);
+        
+        return $duplicate;
+    }
+
 }
