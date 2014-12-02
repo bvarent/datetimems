@@ -113,8 +113,8 @@ class DateTimeMS extends DateTime
         }
         elseif($newMicroInSeconds >= 1)
         {
-            $overflow = floor(2-$newMicroInSeconds);
-            $newMicroInSeconds -= $overflow;
+            $overflow = floor($newMicroInSeconds);
+            $newMicroInSeconds = fmod($newMicroInSeconds, 1.0);
             $secondsDiff += $overflow;
         }
         
@@ -410,7 +410,7 @@ class DateTimeMS extends DateTime
      */
     public function sub($interval)
     {
-        $invInterval = clone $interval;
+        $invInterval = DateIntervalMS::duplicate($interval);
         $invInterval->invert = !$interval->invert;
         return $this->add($invInterval);
     }
